@@ -1,10 +1,96 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>爬虫</title>
+     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
 </head>
+<style>
+    body{background-color: #162F42}
+    a{text-decoration:none;}
+    .main{width: 960px;height: 100%;margin-left:auto;margin-right:auto;}
+    .head{margin-top: 16px}
+    .logo{float: left}
+    .logo h2{color: #ffffff}
+    .login{float: right;padding-top: 32px}
+    .login a{color: #ffffff;font-weight: bold}
+    .line{clear: both;opacity: 1;width: 960px;margin: 0 auto;height: 1px;background-color: #ffffff;background: rgba(255,255,255,.3);transition: width .2s ease-in-out;}
+    .title{margin-top: 40px;margin-bottom: 40px;text-align: center}
+    .title span{color: #ffffff;font-weight: bold;font-size: 40px}
+    .input{padding-top: 40px;padding-bottom: 40px;text-align: center}
+    .url_input{font-size: 18px;width: 400px;height: 40px;padding: 16px 20px;border-radius: 5px;border: none;outline: 0;margin-right: 20px;font-weight: 300;}
+    .url_addr{font-size: 14px;width: 300px;height: 40px;border-radius: 5px;border: none;outline: 0;font-size: 14px;padding-left: 12px;margin-right: 20px}
+    .url_addr option{font-size: 14px}
+    .btn{height: 40px;font-size: 14px}
+
+    .foot{position:absolute;bottom:0;height: 100px;text-align: center}
+    .footer{margin-top: 40px}
+    .footer p{color: #ffffff;font-size: 12px}
+</style>
 <body>
-    <h1>hello world!</h1>
+    <div class="main">
+        <div class="head">
+            <div class="logo"><h2>杭州数立方征信有限公司</h2></div>
+            <div class="login">
+                <a href="#">登录</a>
+                <a href="#">注册</a>
+            </div>
+        </div>
+        <div class="line"></div>
+        <div class="title"><span>新一代智能爬虫</span></div>
+        <form id="spider_from" action="" method="post">
+            {% csrf_token %}
+            <div class="input">
+                <input id="url_name" class="url_input" type="text" name="url_name" placeholder="请输入企业名称"/>
+                <select id="url_addr" class="url_addr" name="url_addr">
+                    <option value ="">请选择网站</option>
+                    <option value ="1">建设通</option>
+                    <option value="2">四库一平台</option>
+                    <option value="3">水滴信用</option>
+                    <option value="4">浙江省建筑市场监管与诚信信息平台</option>
+                </select>
+                <button id="spider_submit" type="button" class="btn btn-default" >开始爬取</button>
+            </div>
+        </form>
+
+        {#  底部  #}
+        <div class="foot">
+            <div class="line"></div>
+            <div class="footer">
+                <p> Copyright 2017 HANGZHOU DATA CUBE CREDIT REFERENCE CO.,LTD All Rights Reserved</p>
+            </div>
+        </div>
+    </div>f
+
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#spider_submit').click(function () {
+
+                 if(!$('#url_name').val()){
+                    layer.msg('企业名称不能为空！');
+                    return false;
+                 }
+                 if(!$('#url_addr').val()){
+                    layer.msg('爬取网址不能为空！');
+                    return false;
+                 }
+                 $.ajax({
+                     url:"/index",
+                     data:$('#spider_from').serialize(),
+                     type:'POST',
+                     success:function (data) {
+                         console.log(data);
+                     }
+                 });
+            });
+        });
+    </script>
 </body>
 </html>
