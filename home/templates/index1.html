@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>智能爬虫</title>
+    <title>爬虫</title>
      <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
 
 </head>
@@ -20,7 +20,9 @@
     .title{margin-top: 40px;margin-bottom: 40px;text-align: center}
     .title span{color: #ffffff;font-weight: bold;font-size: 40px}
     .input{padding-top: 40px;padding-bottom: 40px;text-align: center}
-    .url_input{font-size: 18px;width: 500px;height: 40px;padding-left:16px;border-radius: 5px;border: none;outline: 0;margin-right: 20px;font-weight: 300;}
+    .url_input{font-size: 18px;width: 400px;height: 40px;border-radius: 5px;border: none;outline: 0;margin-right: 20px;font-weight: 300;}
+    .url_addr{font-size: 14px;width: 300px;height: 40px;border-radius: 5px;border: none;outline: 0;font-size: 14px;padding-left: 12px;margin-right: 20px}
+    .url_addr option{font-size: 14px}
     .btn{height: 40px;font-size: 14px}
 
     .foot{position:absolute;bottom:0;height: 100px;text-align: center}
@@ -41,7 +43,14 @@
         <form id="spider_from" action="" method="post">
             {% csrf_token %}
             <div class="input">
-                <input id="url_name" class="url_input" type="text" name="url_name" placeholder="输入数据来源网址"/>
+                <input id="url_name" class="url_input" type="text" name="url_name" placeholder="请输入企业名称"/>
+                <select id="url_addr" class="url_addr" name="url_addr">
+                    <option value ="">请选择网站</option>
+                    <option value ="1">建设通</option>
+                    <option value="2">四库一平台</option>
+                    <option value="3">水滴信用</option>
+                    <option value="4">浙江省建筑市场监管与诚信信息平台</option>
+                </select>
                 <button id="spider_submit" type="button" class="btn btn-default" >开始爬取</button>
             </div>
         </form>
@@ -63,9 +72,13 @@
     <script type="text/javascript">
         $(function () {
             $('#spider_submit').click(function () {
-                var url = $('#url_name').val();
-                 if(!check_url(url)){
-                    layer.msg('请输入正确数据来源网址！');
+
+                 if(!$('#url_name').val()){
+                    layer.msg('企业名称不能为空！');
+                    return false;
+                 }
+                 if(!$('#url_addr').val()){
+                    layer.msg('爬取网址不能为空！');
                     return false;
                  }
                  $.ajax({
@@ -73,23 +86,11 @@
                      data:$('#spider_from').serialize(),
                      type:'POST',
                      success:function (data) {
-                         var url_name = data['url_name'];
-{#                         alert(url_name);#}
-{#                         location.href = "{% url 'home:page_item' %}";#}
-{#                         location.href = "/page_item/"+url_name;#}
-{#                         layer.msg(data['url_name'])#}
-{#                         console.log(data['url_name']);#}
+                         layer.msg(data['url_name'])
                      }
                  });
             });
         });
-        //判断是不是合法网站
-        function check_url(url) {
-            if((/^((https|http|ftp|rtsp|mms)?:\/\/)[^\s]+/.test(url))){
-                return 1;
-            }
-             return 0;
-        }
     </script>
 </body>
 </html>
