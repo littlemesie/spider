@@ -38,11 +38,11 @@
         </div>
         <div class="line"></div>
         <div class="title"><span>新一代智能爬虫</span></div>
-        <form id="spider_from" action="" method="post">
+        <form id="spider_from" action="{% url 'home:page_item' %}" method="post">
             {% csrf_token %}
             <div class="input">
                 <input id="url_name" class="url_input" type="text" name="url_name" placeholder="输入数据来源网址"/>
-                <button id="spider_submit" type="button" class="btn btn-default" >开始爬取</button>
+                <button id="spider_submit" type="submit" class="btn btn-default" >开始爬取</button>
             </div>
         </form>
 
@@ -68,19 +68,19 @@
                     layer.msg('请输入正确数据来源网址！');
                     return false;
                  }
-                 $.ajax({
-                     url:"/index",
-                     data:$('#spider_from').serialize(),
-                     type:'POST',
-                     success:function (data) {
-                         var url_name = data['url_name'];
+{#                 $.ajax({#}
+{#                     url:"/index",#}
+{#                     data:$('#spider_from').serialize(),#}
+{#                     type:'post',#}
+{#                     success:function (data) {#}
+{#                         var url_name = data['url_name'];#}
 {#                         alert(url_name);#}
 {#                         location.href = "{% url 'home:page_item' %}";#}
 {#                         location.href = "/page_item/"+url_name;#}
 {#                         layer.msg(data['url_name'])#}
 {#                         console.log(data['url_name']);#}
-                     }
-                 });
+{#                     }#}
+{#                 });#}
             });
         });
         //判断是不是合法网站

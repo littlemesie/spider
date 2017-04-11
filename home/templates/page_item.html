@@ -3,23 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <title>智能爬虫</title>
-     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery-1.11.3.min.js' %}"></script>
 </head>
 <style>
-    body{margin: 0;padding: 0}
+    body{margin: 0;padding: 0;overflow: hidden;background-color: #F1F1F1;color: #717171;}
     a{text-decoration:none;}
+    .main{position: absolute;verflow-y: scroll;height: 100%;width: 100%}
+    .top{position: fixed;z-index: 999;width: 100%;background: #162F42;color: #f7f7f7;text-align: center;height: 80px;overflow: hidden;margin-top: 0;font-size: 16px;}
+    .back{float: left; width: 120px;border: 1px solid;border-radius: 50px;margin: 20px;position: fixed;z-index: 100;height: 40px;line-height: 40px;cursor: pointer}
+    .title{position: absolute;top: 15px;left: 0;width: 100%;display: inline-block;}
+    .crawl_title{width: 60%;margin: 0 auto;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+    .rule{cursor: pointer;width: 50%;display: inline-block;margin: 5px;color: rgba(255,255,255,.8);font-size: 12px;}
+    .load_page{margin-top:80px;padding:0;height:100%;width:100%;}
+    .next{position: relative;float: right;width: 120px;border: 1px solid;border-radius: 50px;margin: 20px;height: 40px;line-height: 40px;cursor: pointer;}
 
+    .bottom{position:absolute;width:100%;bottom:0;height: 200px;background-color: #162F42;color: #F1F1F1;overflow-y: scroll}
+    .head_line{margin-top: 20px;margin-left: 20px;font-size: 16px;}
+    .line{opacity: 1;margin-top: 20px;height: 1px;background-color: #F1F1F1;transition: width .2s ease-in-out;}
+    .crawl_table{margin: 0;font-size: 14px;}
+    .thead{width: 300px;height: 30px;border-bottom: solid 1px #F1F1F1;border-right: solid 1px #F1F1F1;}
+    .tr{margin-left: 20px;line-height: 30px}
+    .tbody{width: 300px;height: 30px;border-bottom: solid 1px #F1F1F1;border-right: solid 1px #F1F1F1;}
+    .td{margin-left: 20px;line-height: 30px}
+    .hover{background-color: #5cb85c}
 </style>
 <body>
+    <div class="main">
+        <div class="top">
+            <div class="back">返回</div>
+            <div class="title">
+{#                <div class="crawl_title">正在爬取：{{ title_name }}</div>#}
+                <div class="crawl_title" id="crawl_title">正在爬取：</div>
+                <div class="rule">查看使用说明</div>
+            </div>
 
-123
-    <div>
-        {{ html }}
+            <div class="next" id="next">
+                完成创建
+            </div>
+        </div>
+{#        <textarea style="display: none" id="html_nome">{{ html|safe }}</textarea>#}
+{#        <iframe class="load_page" id="load_page" src="{{ url|safe }}"></iframe>#}
+        <iframe class="load_page" id="load_page" src=""></iframe>
+
+        <!--底部弹出对话框-->
+        <div class="bottom">
+            <div class="head_line">点击页面元素来选取数据，数据预览将会显示在这里</div>
+            <div class="line"></div>
+            <div class="crawl_table">
+                <div class="thead">
+                    <div class="tr">列表一</div>
+                </div>
+                <div class="tbody">
+                    <div class="td"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
+
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+{#    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>#}
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'layer/layer.js' %}"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            var m = {{ dic|safe }}
+            $('#crawl_title').append(m['title_name'])
+            for(var i = 0;i<m['src_head1'].length;i++){
+                var script_head1 = "<script type=\"text/javascript\"  src=\"" +m ['src_head1'][i] + "\"><\/script>"
+{#                 $("iframe").contents().find('head').append(script_head1)#}
+{#                console.log(script_head1);#}
+            }
+            //添加css
+            for(var i = 0;i<m['head_href'].length;i++){
+                var href = "<link rel=\"stylesheet\" href=\"" + m['url'] + m ['head_href'][i] + "\"\/>"
+                 $("iframe").contents().find('head').append(href);
+                console.log(href);
+            }
+            //添加头部
+            $("iframe").contents().find('head').append(m['head']);
+            //添加选中了高亮显示
+            var st = $("iframe").contents().find('style');
+            if(st.length == 0){
+                var h1 = "<style>.hover{background: #5cb85c;}<\/style>"
+                $("iframe").contents().find('head').append(h1);
+            }else {
+                var h2 = ".hover{background: #5cb85c;}"
+                $("iframe").contents().find('style').append(h2);
+            }
+{#            console.log(st.length);#}
+
+
+            for(var j = 0;j<m['src_head2'].length;j++){
+                var script_head2 = "<script >" + m ['src_head2'][j] + "<\/script>";
+{#                 $("iframe").contents().find('head').append(script_head2)#}
+{#                console.log(script_head2);#}
+            }
+
+            $("iframe").contents().find('body').append(m['body']);
+            console.log(m['url']);
+            // 去掉<a>标签的href和点击事件
+            $("iframe").contents().find('a').removeAttr('href');
+            $("iframe").contents().find('a').removeAttr('onclick');
+
+            //给所有的表现添加cursor 及一个伪id 添加划入划出效果
+            var sum_wid = 0;
+            for(var i = 0;i<m['element'].length;i++){
+                var el = m['element'][i];
+                $("iframe").contents().find(el).css('cursor','pointer');
+                $("iframe").contents().find(el).attr('wid',i);
+                $("iframe").contents().find(el).hover(
+                    function () {
+                        $(this).parents().removeClass('hover')
+                        $(this).addClass("hover");
+                    },
+                    function () {
+                        $(this).removeClass("hover");
+                    }
+                );
+                sum_wid = i;
+{#                console.log(m['element'][i]);#}
+            }
+            //获取选择的值
+            for(var i = 0;i<m['classes'].length;i++){
+                var classes = m['classes'][i];
+                if(classes != ''){
+                    class_arr = classes.split(' ');
+                    var cl = '';
+                    for(var j = 0;j<class_arr.length;j++){
+                        if(class_arr[j] != ''){
+                            cl =cl + '.' + class_arr[j];
+                        }
+                    }
+                    // 点击区域
+                    $("iframe").contents().find(cl).click(function () {
+                        var click_class = $(this).attr('class');
+                        click_arr = click_class.split(' ');
+                         var cli = '';
+                        for(var k = 0;k<click_arr.length-1;k++){
+                            if(click_arr[k] != ''){
+                                cli =cli + '.' + click_arr[k];
+                            }
+                        }
+{#                        console.log(cli);#}
+                        var str_arr = [];//保存数组
+                        $("iframe").contents().find(cli).each(function () {
+                            var t = $(this).text();
+                            str_arr.push(t);
+
+                        });
+
+{#                        for(var k = 0;k < str_arr){}#}
+                        for(var k = 0;k<str_arr.length;k++){
+                            $('.td').html(str_arr[0]);
+                        }
+{#                        console.log(str_arr[0]);#}
+                        return false;
+                    });
+                }
+            }
+{#            console.log(str_arr);#}
+            //
+            var n = 0;
+            $("iframe").contents().find('.jy_blue1.span1 ').each(function () {
+                 var s = $(this).text();
+{#                 console.log(s);#}
+            });
+
+        })
+
+    </script>
+
 </body>
 </html>
